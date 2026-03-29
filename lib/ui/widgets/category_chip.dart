@@ -1,39 +1,48 @@
-import 'package:cookbook_app/data/models/category_model.dart';
-import 'package:cookbook_app/providers/recipes_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class CategoryChip extends StatelessWidget {
-  final CategoryModel category;
+  final String label;
   final bool isSelected;
-  final ValueChanged<bool> onSelect;
+  final VoidCallback? onTap;
+  final bool isLoading;
 
   const CategoryChip({
     super.key,
-    required this.category,
-    required this.isSelected,
-    required this.onSelect,
-  });
+    required this.label,
+    this.isSelected = false,
+    this.onTap,
+  }) : isLoading = false;
+
+  const CategoryChip.skeleton({super.key})
+    : label = '               ',
+      isSelected = false,
+      onTap = null,
+      isLoading = true;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<RecipesProvider>(
-      builder: (context, provider, child) {
-        return ChoiceChip.elevated(
-          label: Text(category.name),
-          selected: isSelected,
-          onSelected: (value) => onSelect(value),
-          showCheckmark: false,
-          selectedColor: Colors.green,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadiusGeometry.circular(15),
-          ),
-          labelStyle: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
-        );
-      },
+    Widget chip = ChoiceChip.elevated(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: onTap != null ? (_) => onTap!() : null,
+      showCheckmark: false,
+      selectedColor: Colors.green,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      labelStyle: TextStyle(
+        color: isSelected ? Colors.white : Colors.black,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
     );
+
+    if (isLoading) {
+      return Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: chip,
+      );
+    }
+
+    return chip;
   }
 }

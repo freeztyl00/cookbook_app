@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 SnackBar showSnackBar({
@@ -23,4 +25,14 @@ SnackBar showSnackBar({
 
 void clearSnackBars(BuildContext context) {
   ScaffoldMessenger.of(context).clearSnackBars();
+}
+
+ImageProvider getImageProvider(String path) {
+  if (path.startsWith('http')) {
+    return NetworkImage(path);
+  } else if (path.startsWith('assets/')) {
+    return AssetImage(path);
+  } else {
+    return FileImage(File(path));
+  }
 }

@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:cookbook_app/core/utils/util_functions.dart';
 import 'package:flutter/material.dart';
 
 class RecipeImage extends StatelessWidget {
@@ -15,15 +14,7 @@ class RecipeImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ImageProvider provider;
-    if (imagePath.contains('assets/')) {
-      provider = AssetImage('assets/default_dish.png');
-    } else if (imagePath.contains('cache') ||
-        imagePath.contains('/data/user')) {
-      provider = FileImage(File(imagePath));
-    } else {
-      provider = NetworkImage(imagePath);
-    }
+    ImageProvider provider = getImageProvider(imagePath);
 
     if (!isFullSize) {
       provider = ResizeImage(provider, width: cacheSize.toInt());

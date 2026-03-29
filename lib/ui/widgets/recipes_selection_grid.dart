@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:cookbook_app/core/theme/sizes.dart';
 import 'package:cookbook_app/core/theme/text_styles.dart';
+import 'package:cookbook_app/core/utils/util_functions.dart';
 import 'package:cookbook_app/data/models/recipe_model.dart';
 import 'package:cookbook_app/providers/recipes_provider.dart';
 import 'package:cookbook_app/ui/screens/recipe_details_screen.dart';
@@ -76,6 +75,13 @@ class RecipesSelectionGrid extends StatelessWidget {
         child: Stack(
           children: [
             Positioned.fill(
+              child: Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Container(color: Colors.white),
+              ),
+            ),
+            Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -89,9 +95,36 @@ class RecipesSelectionGrid extends StatelessWidget {
             Positioned(
               left: 8,
               top: 8,
-              child: Card(
-                color: Theme.of(context).colorScheme.surfaceContainer,
-                child: SizedBox.fromSize(size: Size(100, 14)),
+              right: 8,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Shimmer.fromColors(
+                    baseColor: Colors.white.withAlpha(150),
+                    highlightColor: Colors.white.withAlpha(200),
+                    child: Container(
+                      height: 18,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(Sizes.s.value),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: Sizes.s.value),
+                  Shimmer.fromColors(
+                    baseColor: Colors.white.withAlpha(150),
+                    highlightColor: Colors.white.withAlpha(200),
+                    child: Container(
+                      height: 18,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(Sizes.s.value),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -110,11 +143,7 @@ class RecipesSelectionGrid extends StatelessWidget {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
             ),
-            itemBuilder: (context, _) => Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: _recipeSelectionSkeletonItem(context),
-            ),
+            itemBuilder: (context, _) => _recipeSelectionSkeletonItem(context),
           );
         }
         if (provider.error != null) {
@@ -128,13 +157,9 @@ class RecipesSelectionGrid extends StatelessWidget {
             ),
             itemBuilder: (context, index) {
               final currentRecipe = provider.loadedRecipes[index];
+              final imagePath = currentRecipe.images?.first ?? '';
               if (index + 1 < provider.loadedRecipes.length) {
-                precacheImage(
-                  FileImage(
-                    File(provider.loadedRecipes[index + 1].images!.first),
-                  ),
-                  context,
-                );
+                precacheImage(getImageProvider(imagePath), context);
               }
               return Padding(
                 padding: EdgeInsets.all(Sizes.xs.value),

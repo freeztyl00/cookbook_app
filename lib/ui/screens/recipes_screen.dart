@@ -126,60 +126,48 @@ class _RecipesScreenState extends State<RecipesScreen>
   Widget _buildCategoriesList(BuildContext context) {
     return Consumer<RecipesProvider>(
       builder: (context, provider, child) {
-        final categories = provider.allCategories;
-
+        final bool loading = provider.isLoading;
+        final int itemCount = loading ? 4 : provider.allCategories.length + 1;
         return SizedBox(
-          height: 45,
+          height: 50,
           child: ListView.separated(
-            key: const PageStorageKey<String>('categories_scroll'),
             padding: EdgeInsets.symmetric(horizontal: Sizes.m.value),
             scrollDirection: Axis.horizontal,
-            itemCount: categories.length + 1,
+            itemCount: itemCount,
             separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
+              if (loading) return const CategoryChip.skeleton();
+
               if (index == 0) {
-                return ChoiceChip(
-                  label: const Text('All'),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(15),
-                  ),
-                  selectedColor: Colors.green,
-                  selected: provider.selectedCategoryId == 'all',
-                  onSelected: (selected) {
-                    if (selected) {
-                      provider.selectCategory('all');
-                      if (_scrollController.hasClients) {
-                        _scrollController.animateTo(
-                          0,
-                          duration: const Duration(milliseconds: 400),
-                          curve: Curves.easeOut,
-                        );
-                      }
-                    }
-                  },
+                return CategoryChip(
+                  label: 'All',
+                  isSelected: provider.selectedCategoryId == 'all',
+                  onTap: () => _handleCategoryTap(context, 'all'),
                 );
               }
-              final cat = categories[index - 1];
+
+              final cat = provider.allCategories[index - 1];
               return CategoryChip(
-                category: cat,
+                label: cat.name,
                 isSelected: provider.selectedCategoryId == cat.id,
-                onSelect: (selected) {
-                  if (selected) {
-                    provider.selectCategory(cat.id);
-                    if (_scrollController.hasClients) {
-                      _scrollController.animateTo(
-                        0,
-                        duration: const Duration(milliseconds: 400),
-                        curve: Curves.easeOut,
-                      );
-                    }
-                  }
-                },
+                onTap: () => _handleCategoryTap(context, cat.id),
               );
             },
           ),
         );
       },
     );
+  }
+
+  void _handleCategoryTap(BuildContext context, String id) {
+    final provider = context.read<RecipesProvider>();
+    provider.selectCategory(id);
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOut,
+      );
+    }
   }
 }

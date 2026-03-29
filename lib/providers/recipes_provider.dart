@@ -107,7 +107,7 @@ class RecipesProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      await Future.delayed(Durations.medium4);
+      await Future.delayed(Duration(seconds: 2));
       await getAllRecipesByCategoryId(_selectedCategoryId);
     } catch (e) {
       _error = 'Failed to refresh recipes: ${e.toString()}';
