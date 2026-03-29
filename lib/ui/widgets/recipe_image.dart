@@ -1,9 +1,9 @@
-import 'package:cookbook_app/core/utils/util_functions.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 class RecipeImage extends StatelessWidget {
   final String imagePath;
-  final double cacheSize = 300;
   final bool isFullSize;
 
   const RecipeImage({
@@ -14,27 +14,24 @@ class RecipeImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ImageProvider provider = getImageProvider(imagePath);
-
-    if (!isFullSize) {
-      provider = ResizeImage(provider, width: cacheSize.toInt());
+    if (!imagePath.startsWith('http')) {
+      return Image.asset(imagePath, fit: BoxFit.cover);
     }
 
-    return Image(
-      image: provider,
+    return CachedNetworkImage(
+      imageUrl: imagePath,
       fit: BoxFit.cover,
-      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-        if (wasSynchronouslyLoaded) return child;
-        return AnimatedOpacity(
-          opacity: frame == null ? 0 : 1,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-          child: child,
-        );
-      },
-      errorBuilder: (context, error, stackTrace) => Container(
+      memCacheWidth: isFullSize ? null : 400,
+      memCacheHeight: isFullSize ? null : 400,
+      fadeInDuration: const Duration(milliseconds: 300),
+      placeholder: (context, url) => Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: Container(color: Colors.white),
+      ),
+      errorWidget: (context, url, error) => Container(
         color: Colors.grey[200],
-        child: const Icon(Icons.broken_image, color: Colors.grey),
+        child: Icon(Icons.broken_image, color: Colors.grey),
       ),
     );
   }

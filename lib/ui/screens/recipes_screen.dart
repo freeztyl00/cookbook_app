@@ -64,6 +64,7 @@ class _RecipesScreenState extends State<RecipesScreen>
         notificationPredicate: (notification) => notification.depth == 0,
         child: CustomScrollView(
           controller: _scrollController,
+          cacheExtent: 500,
           physics: AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverAppBar(
@@ -163,11 +164,7 @@ class _RecipesScreenState extends State<RecipesScreen>
     final provider = context.read<RecipesProvider>();
     provider.selectCategory(id);
     if (_scrollController.hasClients) {
-      _scrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOut,
-      );
+      _scrollController.jumpTo(0);
     }
   }
 }
