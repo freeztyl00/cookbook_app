@@ -8,7 +8,7 @@ class UserScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        SliverAppBar.large(title: Text(UserScreen.pageLabel)),
+        SliverAppBar(title: Text(UserScreen.pageLabel)),
         SliverFillRemaining(
           hasScrollBody: false,
           child: Center(child: Text("Welcome")),

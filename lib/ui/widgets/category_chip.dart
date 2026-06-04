@@ -3,6 +3,7 @@ import 'package:shimmer/shimmer.dart';
 
 class CategoryChip extends StatelessWidget {
   final String label;
+  final Icon? icon;
   final bool isSelected;
   final VoidCallback? onTap;
   final bool isLoading;
@@ -12,33 +13,46 @@ class CategoryChip extends StatelessWidget {
     required this.label,
     this.isSelected = false,
     this.onTap,
+    this.icon,
   }) : isLoading = false;
 
   const CategoryChip.skeleton({super.key})
-    : label = '               ',
+    : label = '                     ',
       isSelected = false,
       onTap = null,
+      icon = null,
       isLoading = true;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     Widget chip = ChoiceChip.elevated(
+      avatar: icon != null
+          ? Icon(
+              icon!.icon,
+              size: 18,
+              color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+            )
+          : null,
       label: Text(label),
+      labelStyle: TextStyle(
+        color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
       selected: isSelected,
       onSelected: onTap != null ? (_) => onTap!() : null,
       showCheckmark: false,
-      selectedColor: Colors.green,
+      selectedColor: colorScheme.primary,
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      labelStyle: TextStyle(
-        color: isSelected ? Colors.white : Colors.black,
-        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-      ),
     );
 
     if (isLoading) {
       return Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
+        baseColor: colorScheme.surfaceContainerHighest,
+        highlightColor: colorScheme.surface,
         child: chip,
       );
     }

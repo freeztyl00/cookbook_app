@@ -130,7 +130,7 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                     "Ingridients: ",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: Sizes.m.value),
+                  SizedBox(height: Sizes.s.value),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: currentRecipe.ingredients
@@ -139,23 +139,23 @@ class _RecipeDetailsScreenState extends State<RecipeDetailsScreen> {
                   ),
                   //Description
                   Divider(
-                    height: Sizes.m.value * 3,
+                    height: Sizes.l.value,
                     thickness: 2,
                     indent: 16,
                     endIndent: 16,
                   ),
                   Text(
-                    "Recipe: ",
+                    "Instructions: ",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: Sizes.m.value),
+                  SizedBox(height: Sizes.s.value),
                   Padding(
                     padding: EdgeInsetsGeometry.symmetric(
                       horizontal: Sizes.m.value,
                     ),
                     child: Text(currentRecipe.description),
                   ),
-                  SizedBox(height: Sizes.xs.value),
+                  SizedBox(height: Sizes.m.value),
                 ],
               ),
             ),

@@ -116,6 +116,30 @@ class DbHelper {
     return mapList.map((map) => RecipeModel.fromMap(map)).toList();
   }
 
+  Future<List<RecipeModel>> searchRecipesInCategory(
+    String title,
+    String categoryId,
+  ) async {
+    final db = await _open();
+    final searchPattern = '%$title%';
+
+    if (categoryId == 'all') {
+      final mapList = await db.query(
+        tableRecipes,
+        where: '$tblRecipesColTitle LIKE ?',
+        whereArgs: [searchPattern],
+      );
+      return mapList.map((map) => RecipeModel.fromMap(map)).toList();
+    }
+
+    final mapList = await db.query(
+      tableRecipes,
+      where: '$tblRecipesColTitle LIKE ? AND $tblRecipesColCategoryId = ?',
+      whereArgs: [searchPattern, categoryId],
+    );
+    return mapList.map((map) => RecipeModel.fromMap(map)).toList();
+  }
+
   Future<List<CategoryModel>> getAllCategories() async {
     final db = await _open();
     final mapList = await db.query(

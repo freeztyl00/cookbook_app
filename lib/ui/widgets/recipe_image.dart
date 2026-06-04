@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
@@ -15,7 +17,10 @@ class RecipeImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!imagePath.startsWith('http')) {
-      return Image.asset(imagePath, fit: BoxFit.cover);
+      if (!imagePath.contains('data')) {
+        return Image.asset(imagePath, fit: BoxFit.cover);
+      }
+      return Image.file(File(imagePath), fit: BoxFit.cover);
     }
 
     return CachedNetworkImage(
@@ -25,9 +30,9 @@ class RecipeImage extends StatelessWidget {
       memCacheHeight: isFullSize ? null : 400,
       fadeInDuration: const Duration(milliseconds: 300),
       placeholder: (context, url) => Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: Container(color: Colors.white),
+        baseColor: Theme.of(context).colorScheme.surfaceContainer,
+        highlightColor: Theme.of(context).colorScheme.surfaceBright,
+        child: Container(color: Theme.of(context).colorScheme.surfaceContainer),
       ),
       errorWidget: (context, url, error) => Container(
         color: Colors.grey[200],

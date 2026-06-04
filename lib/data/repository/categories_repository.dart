@@ -11,8 +11,8 @@ class CategoriesRepository {
       "/categories.php",
       fromJson: (json) => CategoriesModel.fromJson(json),
     );
-    return data.categories!.map((e) {
-      return CategoryModel(id: e.idCategory, name: e.strCategory ?? "Unknown");
+    return data.categories!.map((c) {
+      return CategoryModel(id: c.idCategory, name: c.strCategory ?? "Unknown");
     }).toList();
   }
 }

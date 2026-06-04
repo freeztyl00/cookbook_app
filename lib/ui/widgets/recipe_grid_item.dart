@@ -14,8 +14,10 @@ class RecipeGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(Sizes.m.value),
-      onTap: () =>
-          context.goNamed(RecipeDetailsScreen.routeName, extra: recipe),
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+        context.goNamed(RecipeDetailsScreen.routeName, extra: recipe);
+      },
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: Stack(
@@ -33,7 +35,11 @@ class RecipeGridItem extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.black.withValues(alpha: 0.6),
+                      Colors.black.withValues(
+                        alpha: Theme.brightnessOf(context) == Brightness.dark
+                            ? 0.8
+                            : 0.6,
+                      ),
                       Colors.transparent,
                     ],
                   ),

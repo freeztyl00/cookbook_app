@@ -39,8 +39,31 @@ class CookBookApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, provider, child) => MaterialApp.router(
-        theme: ThemeData.from(colorScheme: lightColorScheme),
-        darkTheme: ThemeData.from(colorScheme: darkColorScheme),
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: lightColorScheme,
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            backgroundColor: lightColorScheme.primaryContainer,
+            foregroundColor: lightColorScheme.onPrimaryContainer,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadiusGeometry.circular(30),
+            ),
+            elevation: 4,
+          ),
+        ),
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          colorScheme: darkColorScheme,
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            backgroundColor: darkColorScheme.primaryContainer,
+            foregroundColor: darkColorScheme.onPrimaryContainer,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+            elevation: 4,
+          ),
+        ),
+
         themeMode: provider.themeMode,
         routerConfig: _router,
       ),

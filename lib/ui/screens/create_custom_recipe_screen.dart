@@ -23,7 +23,7 @@ class _CreateCustomRecipeState extends State<CreateCustomRecipe> {
     final pickedFiles = await _picker.pickMultiImage();
     if (pickedFiles.isNotEmpty) {
       setState(() {
-        _pickedImages.addAll(pickedFiles.map((e) => File(e.path)));
+        _pickedImages.addAll(pickedFiles.map((e) => File(e.path)).toList());
       });
     }
   }
@@ -62,11 +62,11 @@ class _CreateCustomRecipeState extends State<CreateCustomRecipe> {
       child: Column(
         children: [
           Text(
-            "NEW RECIPE",
+            "New recipe",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 24,
               fontWeight: FontWeight.bold,
-              letterSpacing: 8,
+              letterSpacing: 6,
             ),
           ),
           Divider(height: Sizes.l.value, thickness: 2),

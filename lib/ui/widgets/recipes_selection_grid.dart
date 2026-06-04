@@ -18,7 +18,7 @@ class RecipesSelectionGrid extends StatelessWidget {
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
             ),
-            itemBuilder: (context, _) => _buildSkeletonItem(),
+            itemBuilder: (context, _) => _buildSkeletonItem(context),
           );
         }
 
@@ -53,7 +53,9 @@ class RecipesSelectionGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildSkeletonItem() {
+  Widget _buildSkeletonItem(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Padding(
       padding: EdgeInsets.all(Sizes.xs.value),
       child: Card(
@@ -62,8 +64,8 @@ class RecipesSelectionGrid extends StatelessWidget {
           children: [
             Positioned.fill(
               child: Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
+                baseColor: colorScheme.surfaceContainerHighest,
+                highlightColor: colorScheme.surface,
                 child: Container(color: Colors.white),
               ),
             ),
@@ -74,9 +76,9 @@ class RecipesSelectionGrid extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTextLine(width: double.infinity),
+                  _buildTextLine(context, width: double.infinity),
                   const SizedBox(height: 6),
-                  _buildTextLine(width: 100),
+                  _buildTextLine(context, width: 100),
                 ],
               ),
             ),
@@ -86,10 +88,14 @@ class RecipesSelectionGrid extends StatelessWidget {
     );
   }
 
-  Widget _buildTextLine({required double width}) {
+  Widget _buildTextLine(BuildContext context, {required double width}) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Shimmer.fromColors(
-      baseColor: Colors.white.withValues(alpha: 0.4),
-      highlightColor: Colors.white.withValues(alpha: 0.8),
+      baseColor: colorScheme.surface.withValues(alpha: 0.4),
+      highlightColor: colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.8,
+      ),
       child: Container(
         height: 14,
         width: width,

@@ -1,12 +1,15 @@
 import 'dart:io';
 
 import 'package:cookbook_app/core/theme/sizes.dart';
+import 'package:cookbook_app/core/theme/text_styles.dart';
 import 'package:cookbook_app/data/models/recipe_model.dart';
 import 'package:cookbook_app/providers/recipes_provider.dart';
 import 'package:cookbook_app/ui/screens/recipe_details_screen.dart';
+import 'package:cookbook_app/ui/widgets/recipe_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class FavouriteRecipesScreen extends StatefulWidget {
   static const String pageLabel = "Favourites";
@@ -32,35 +35,22 @@ class _FavouriteRecipesScreenState extends State<FavouriteRecipesScreen> {
             clipBehavior: Clip.antiAlias,
             child: Stack(
               children: [
-                if (currentRecipe.images!.first.contains("assets/"))
-                  Positioned.fill(
-                    child: Image.asset(
-                      "assets/default_dish.png",
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                else if (currentRecipe.images!.first.contains("cache"))
-                  Positioned.fill(
-                    child: Image.file(
-                      File(currentRecipe.images!.first),
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                else
-                  Positioned.fill(
-                    child: Image.network(
-                      currentRecipe.images!.first,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
                 Positioned.fill(
-                  child: Container(
+                  child: RecipeImage(imagePath: currentRecipe.images!.first),
+                ),
+                Positioned.fill(
+                  child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        begin: AlignmentGeometry.topCenter,
-                        end: AlignmentGeometry.bottomCenter,
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                         colors: [
-                          Colors.black.withAlpha(50),
+                          Colors.black.withValues(
+                            alpha:
+                                Theme.brightnessOf(context) == Brightness.dark
+                                ? 0.8
+                                : 0.6,
+                          ),
                           Colors.transparent,
                         ],
                       ),
@@ -75,24 +65,14 @@ class _FavouriteRecipesScreenState extends State<FavouriteRecipesScreen> {
                     currentRecipe.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black,
-                          offset: Offset(1, 0),
-                          blurRadius: 8,
-                        ),
-                      ],
-                    ),
+                    style: textTitleStyle,
                   ),
                 ),
                 if (currentRecipe.isFavourite)
-                  Positioned(
-                    top: 8,
+                  const Positioned(
+                    bottom: 8,
                     right: 8,
-                    child: Icon(Icons.favorite, color: Colors.red),
+                    child: Icon(Icons.favorite, color: Colors.red, size: 30),
                   ),
               ],
             ),
@@ -100,51 +80,69 @@ class _FavouriteRecipesScreenState extends State<FavouriteRecipesScreen> {
         ),
       ),
       onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
         context.goNamed(RecipeDetailsScreen.routeName, extra: currentRecipe);
       },
     );
   }
 
   Widget favouriteRecipeSelectionSkeletonItem(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Padding(
       padding: EdgeInsets.all(Sizes.xs.value),
       child: AspectRatio(
         aspectRatio: 16 / 9,
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: AlignmentGeometry.topCenter,
-                      end: AlignmentGeometry.bottomCenter,
-                      colors: [Colors.black.withAlpha(50), Colors.transparent],
-                    ),
+        child: Padding(
+          padding: EdgeInsets.all(Sizes.xs.value),
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Shimmer.fromColors(
+                    baseColor: colorScheme.surfaceContainerHighest,
+                    highlightColor: colorScheme.surface,
+                    child: Container(color: Colors.white),
                   ),
                 ),
-              ),
-              Positioned(
-                left: 8,
-                top: 8,
-                child: Card(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  child: SizedBox.fromSize(size: Size(100, 14)),
+                Positioned(
+                  left: 8,
+                  top: 8,
+                  right: 8,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTextLine(context, width: double.infinity),
+                      const SizedBox(height: 6),
+                      _buildTextLine(context, width: 100),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => context.read<RecipesProvider>().init(),
+  Widget _buildTextLine(BuildContext context, {required double width}) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Shimmer.fromColors(
+      baseColor: colorScheme.surface.withValues(alpha: 0.4),
+      highlightColor: colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.8,
+      ),
+      child: Container(
+        height: 14,
+        width: width,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+        ),
+      ),
     );
   }
 
@@ -153,7 +151,7 @@ class _FavouriteRecipesScreenState extends State<FavouriteRecipesScreen> {
     return Consumer<RecipesProvider>(
       builder: (context, provider, child) {
         return RefreshIndicator(
-          onRefresh: () => provider.onForceRefresh(),
+          onRefresh: () => provider.onRefresh(),
           displacement: 60,
           child: CustomScrollView(
             slivers: [
@@ -211,11 +209,17 @@ class RecipesSearch extends StatelessWidget {
     return SearchAnchor(
       builder: (context, controller) => SearchBar(
         padding: WidgetStatePropertyAll<EdgeInsets>(
-          EdgeInsets.symmetric(horizontal: Sizes.s.value),
+          EdgeInsets.symmetric(horizontal: Sizes.m.value),
         ),
         controller: controller,
-        leading: IconButton(onPressed: () {}, icon: Icon(Icons.search)),
-        hintText: "Search",
+        leading: Icon(Icons.search),
+        trailing: [
+          IconButton(
+            onPressed: controller.clear,
+            icon: const Icon(Icons.clear),
+          ),
+        ],
+        hintText: "Search favourites...",
         onTap: () {
           controller.openView();
         },
@@ -231,11 +235,15 @@ class RecipesSearch extends StatelessWidget {
             .take(10)
             .map(
               (recipe) => ListTile(
+                leading: CircleAvatar(
+                  key: ValueKey(recipe.id),
+                  child: RecipeImage(imagePath: recipe.images!.first),
+                ),
                 title: Text(recipe.title),
                 subtitle: Text(
-                  recipe.description,
+                  recipe.ingredients.join(', '),
                   maxLines: 1,
-                  overflow: TextOverflow.clip,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 onTap: () {
                   controller.closeView(recipe.title);

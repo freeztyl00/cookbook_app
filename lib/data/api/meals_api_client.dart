@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class MealsApiClient {
-  final String baseUrl = 'https://www.themealdb.com/api/json/v1/1';
+  final String _baseUrl = 'https://www.themealdb.com/api/json/v1/1';
   final http.Client _client;
 
   MealsApiClient(this._client);
@@ -14,7 +14,7 @@ class MealsApiClient {
   }) async {
     try {
       final response = await _client
-          .get(Uri.parse('$baseUrl$endpoint'))
+          .get(Uri.parse('$_baseUrl$endpoint'))
           .timeout(const Duration(seconds: 10));
       if (response.statusCode == 200) {
         return fromJson(jsonDecode(response.body));
